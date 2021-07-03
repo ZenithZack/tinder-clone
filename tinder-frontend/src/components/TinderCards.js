@@ -1,18 +1,26 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import TinderCard from "react-tinder-card"
 import './TinderCards.css'
+import axios from '../axios.js'
 
 function TinderCards() {
-    const [people, setPeople] = useState([
-        {
-            name: 'Elon Musk',
-            url: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Elon_Musk_Royal_Society_%28crop1%29.jpg/440px-Elon_Musk_Royal_Society_%28crop1%29.jpg"
-        },
-        {
-            name: 'Jeff Bezos',
-            url: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Jeff_Bezos_at_Amazon_Spheres_Grand_Opening_in_Seattle_-_2018_%2839074799225%29_%28cropped%29.jpg/440px-Jeff_Bezos_at_Amazon_Spheres_Grand_Opening_in_Seattle_-_2018_%2839074799225%29_%28cropped%29.jpg"
+    const [people, setPeople] = useState([]);
+    // when tinder cards load, it runs/loads tinder cards only once --> that's why the empty array
+    // if you add anything inside the array (lets say a variable), it will load whenever the value of that variable changes 
+    // useEffect is a hook
+    // notice the pattern of an async function inside the useEffect hook
+    useEffect(() => {
+        async function fetchData() {
+            // we use just "/tinder/cards" because baseURL was defined in axios
+            const req = await axios.get("/tinder/cards");
+
+            setPeople(req.data);
         }
-    ]);
+
+        fetchData();
+    }, []);
+
+    console.log(people);
 
     const swiped = (direction, nameToDelete) => {
         console.log("removing: " + nameToDelete);
@@ -35,7 +43,7 @@ function TinderCards() {
                     >
                     
                         <div
-                            style={{ backgroundImage: `url(${person.url})` }}
+                            style={{ backgroundImage: `url(${person.imgUrl})` }}
                             className="card"
                         >
                             <h3>{person.name}</h3>
